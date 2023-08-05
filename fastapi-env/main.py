@@ -4,10 +4,13 @@ app = FastAPI()
 
 
 @app.get('/')
-def heyy():
-    return "heyy"
+def index():
+    return {'data': 'blog list'}
 
-@app.get('/about') 
-def about():
-    data = {'name': 'Saketh','age':20, 'current_study': 'NBKRIST','institute_address':'Vidyanagar'}
-    return data
+@app.get(f'/blog/{id}') 
+def show(id):
+    return {'data': id}
+
+@app.get(f'/blog/{id}/comments')
+def comments(id):
+    return {'data': {'1', '2'}}

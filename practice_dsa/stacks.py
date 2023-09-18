@@ -1,3 +1,5 @@
+import json
+import smtplib
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -54,13 +56,40 @@ def top10_fetch():
     videos_data = [parse_video(video) for video in videos[:10]]
     videos_df = pd.DataFrame(videos_data)
     print(videos_df)
-    videos_df.to_csv("top10_trending.csv", index=None)
-    return videos_df
+    return videos_df.to_dict(orient='records')
+
+
+def Send_Email():
+    try:
+        with open('SENDER_PASSWORD', 'r') as file:
+            SENDER_PASSWORD = file.read()
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.ehlo()
+
+        SENDER_EMAIL = '21kb1a3042@nbkrist.org'
+        RECEIVER_EMAIL = 'sakeths788@gmail.com'
+        subject = 'Test message from IntelliJ'
+        body = top10_fetch()
+        body = json.dumps(body, indent=2)
+        print(body)
+
+        email_text = f"""
+        From: {SENDER_EMAIL}
+        To: {RECEIVER_EMAIL}
+        Subject: {subject}
+        {body}"""
+
+        server_ssl.login(SENDER_EMAIL, str(SENDER_PASSWORD))
+        server_ssl.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, email_text)
+        server_ssl.close()
+
+    except Exception as z:
+        print(z)
+    return None
 
 
 if __name__ == "__main__":
     try:
-        df = top10_fetch()
-        print(df)
+        Send_Email()
     except Exception as e:
         print(e)
